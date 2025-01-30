@@ -51,6 +51,15 @@ export const loadMedication =  async (req:Request, res:Response): Promise<void> 
     }
 }
 
+export const getMedicationsByEvoltSerial = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { serialNumber } = req.params; // Get serial number from the request params
+        const medications = await eVOLTService.getMedicationsByEvoltSerial(serialNumber);
+        res.status(200).json({ medications });
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+}
 export const checkBatteryLevels = async (req: Request, res: Response): Promise<void> => {
     try {
         const { serialNumber } = req.params; // Use params instead of body for better RESTful API

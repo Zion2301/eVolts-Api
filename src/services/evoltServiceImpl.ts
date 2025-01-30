@@ -4,6 +4,18 @@ import { eVOLTservice } from "./evoltService";
 
 const prisma = new PrismaClient();
 export class eVOLTServiceImpl implements eVOLTservice{
+   async getMedicationsByEvoltSerial(serialNumber: string): Promise<any> {
+    const evolt = await prisma.eVOLTS.findUnique({
+        where: { serialNumber },
+        include: { medications: true }, // Include related medications
+    });
+
+    if (!evolt) {
+        throw new Error(`eVOLT with serial number ${serialNumber} not found`);
+    }
+
+    return evolt.medications;
+    }
     async loadMedication(serialNumber: string, medications: { name: string; weight: number; code: string; image: string }[]): Promise<string> {
         // Fetch the eVTOL by serial number
         const evolt = await prisma.eVOLTS.findUnique({
