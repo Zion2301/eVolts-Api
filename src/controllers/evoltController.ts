@@ -2,25 +2,30 @@ import { Response, Request } from "express";
 import { eVOLTServicImpl } from "../services/evoltServiceImpl";
 
 const eVOLTService = new eVOLTServicImpl()
-export const registernweVOLT = async (req:Request, res: Response) => {
+export const registernweVOLT = async (req:Request, res: Response): Promise<void> => {
     try {
         const {serialNumber, state, batteryLevel} = req.body
         if (!serialNumber || !state || batteryLevel == undefined || isNaN(batteryLevel)) {
-            return res.status(400).json({error: "Missing fields are required"})
+         res.status(400).json({error: "Missing fields are required"})
+         return
             
         }
 
         const evolt = await eVOLTService.registereVOLT(serialNumber, state, batteryLevel)
-        return res.status(200).json({evolt})
+        res.status(200).json({evolt})
+        return
     } catch (error) {
-        return res.status(500).json({error})
+         res.status(500).json({error})
+         return
     }
 }
-export const getAlleVOLTS = async (req:Request, res:Response) => {
+export const getAlleVOLTS = async (req:Request, res:Response): Promise<void> => {
     try {
         const evolts =  await eVOLTService.getAlleVOLTS()
-        return res.status(200).json({evolts})
+         res.status(200).json({evolts})
+         return
     } catch (error) {
-        
+       res.status(500).json({error})
+       return 
     }
 } 
