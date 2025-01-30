@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ 
+enum WEIGHT {
+  LIGHTWEIGHT
+  MIDDLEWEIGHT
+  HEAVYWEIGHT 
+  CRUISEWEIGHT
+}
+
+enum STATE {
+  IDLE
+  LOADING
+  LOADED 
+  DELIVERING
+  DELIVERED
+  RETURNING
+}
+
+model eVOLTS{
+  serialNumber String @unique
+  weightLimit  Int @default(500)
+  batteryLevel Int
+  weight  WEIGHT  @default(LIGHTWEIGHT)
+  state  STATE  @default(IDLE) 
+  batteryLogs  BatteryLog[] 
+}
+
+model Medication {
+medId Int @unique
+name String
+weight String
+code String
+image String
+}
+
+model BatteryLog {
+  batteryId          Int    @id @default(autoincrement())
+  eVTOL_serialNumber String
+  eVTOL              eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
+  batteryLevel       Int
+  timestamp          DateTime @default(now())
+}
+
+
+
+
