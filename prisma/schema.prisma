@@ -35,15 +35,18 @@ model eVOLTS{
   batteryLevel Int
   weight  WEIGHT  @default(LIGHTWEIGHT)
   state  STATE  @default(IDLE) 
-  batteryLogs  BatteryLog[] 
+  batteryLogs  BatteryLog[]
+  medications   Medication[] 
 }
 
 model Medication {
-medId Int @unique
-name String
-weight String
-code String
-image String
+id           Int      @id @default(autoincrement())
+  name         String
+  weight       Int
+  code         String
+  image        String
+  eVTOL_serialNumber String
+  eVTOL        eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
 }
 
 model BatteryLog {
