@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const evoltController_1 = require("../controllers/evoltController");
+const cloudinaryConfig_1 = require("../config/cloudinaryConfig");
+const evotlRouter = (0, express_1.Router)();
+evotlRouter.post("/register", evoltController_1.registerEVOLT);
+evotlRouter.get("/", evoltController_1.getAllEVOLTS);
+evotlRouter.post("/upload-medication", cloudinaryConfig_1.uploadToCloudinaryMedicationImage);
+evotlRouter.post("/load-medication/:serialNumber", evoltController_1.loadMedication);
+evotlRouter.get("/battery-check/:serialNumber", evoltController_1.checkBatteryLevels);
+evotlRouter.get("/medications/:serialNumber", evoltController_1.getMedicationsByEvoltSerial);
+evotlRouter.get("/idle-evolts", evoltController_1.getIdleEVOLTs);
+exports.default = evotlRouter;
