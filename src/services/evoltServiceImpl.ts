@@ -4,6 +4,15 @@ import { eVOLTservice } from "./evoltService";
 
 const prisma = new PrismaClient();
 export class eVOLTServiceImpl implements eVOLTservice{
+   async getidleEvolts(): Promise<any> {
+        try {
+            const idleevolts = await prisma.eVOLTS.findMany({where: {state: "IDLE"}})
+            return idleevolts
+        } catch (error) {
+            console.error("Error fetching eVolts: ", error)
+            throw new Error("Failed to retrive idle eVolts");
+        }
+    }
    async getMedicationsByEvoltSerial(serialNumber: string): Promise<any> {
     const evolt = await prisma.eVOLTS.findUnique({
         where: { serialNumber },

@@ -88,4 +88,13 @@ export const checkBatteryLevels = async (req: Request, res: Response): Promise<v
     }
 };
 
+export const getIdleEVOLTs = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const idleEVOLTs = await eVOLTService.getidleEvolts();
+        res.status(200).json({ success: true, data: idleEVOLTs });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 
