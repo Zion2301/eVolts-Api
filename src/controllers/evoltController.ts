@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { eVOLTServiceImpl } from "../services/evoltServiceImpl";
 import { eVOLTS, STATE, WEIGHT } from "@prisma/client";
-import { serializeAMimeType } from "undici-types";
-
+import { uploadToCloudinaryMedicationImage } from "../config/cloudinaryConfig";
 const eVOLTService = new eVOLTServiceImpl();
 
 export const registerEVOLT = async (req: Request, res: Response): Promise<void> => {
@@ -39,17 +38,26 @@ export const getAllEVOLTS = async (req: Request, res: Response): Promise<void> =
     
 };
 
-export const loadMedication =  async (req:Request, res:Response): Promise<void> => {
+export const loadMedication = async (req: Request, res: Response): Promise<void> => {
     try {
         const { serialNumber } = req.params;
-        const medications = req.body.medications; // Expect an array of medications
+        const { name, weight, code, image } = req.body; // Expecting image URL, not a file
 
-        const result = await eVOLTService.loadMedication(serialNumber, medications);
+        if (!name || !weight || !code || !image) {
+            res.status(400).json({ error: "Missing required fields" });
+            return 
+        }
+
+        // Send data to service layer
+        const result = await eVOLTService.loadMedication(serialNumber, [
+            { name, weight: Number(weight), code, image },
+        ]);
+
         res.status(200).json({ message: result });
     } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-}
+};
 
 export const getMedicationsByEvoltSerial = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -79,3 +87,5 @@ export const checkBatteryLevels = async (req: Request, res: Response): Promise<v
         return;
     }
 };
+
+
