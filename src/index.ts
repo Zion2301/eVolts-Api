@@ -11,8 +11,11 @@ const app = express();
 app.use(cors());
 
 // If you want to restrict it to a specific origin (like your frontend)
+// Configure the CORS middleware with specific options
 app.use(cors({
-  origin: 'http://localhost:5173'  // Replace with your frontend URL if needed
+  origin: 'http://localhost:5173',  // Replace with your frontend URL if needed
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow specific HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
 }));
 
 app.use(express.json());
