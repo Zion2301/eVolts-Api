@@ -14,8 +14,8 @@ app.use(cors());
 // Configure the CORS middleware with specific options
 app.use(cors({
   origin: 'http://localhost:5173',  // Replace with your frontend URL if needed
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow specific HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
+  methods: ['GET', 'POST'],  // Allow specific HTTP methods
+  allowedHeaders: ['Content-Type'],  // Allow specific headers
 }));
 
 app.use(express.json());
