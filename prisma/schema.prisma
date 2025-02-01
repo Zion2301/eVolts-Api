@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,51 +6,47 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- 
+
+model eVOLTS {
+  serialNumber String       @unique
+  weightLimit  Int          @default(500)
+  batteryLevel Int
+  weight       WEIGHT       @default(LIGHTWEIGHT)
+  state        STATE        @default(IDLE)
+  batteryLogs  BatteryLog[]
+  medications  Medication[]
+}
+
+model Medication {
+  id                 Int    @id @default(autoincrement())
+  name               String
+  weight             Int
+  code               String
+  image              String
+  eVTOL_serialNumber String
+  eVTOL              eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
+}
+
+model BatteryLog {
+  batteryId          Int      @id @default(autoincrement())
+  eVTOL_serialNumber String
+  batteryLevel       Int
+  timestamp          DateTime @default(now())
+  eVTOL              eVOLTS   @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
+}
+
 enum WEIGHT {
   LIGHTWEIGHT
   MIDDLEWEIGHT
-  HEAVYWEIGHT 
+  HEAVYWEIGHT
   CRUISEWEIGHT
 }
 
 enum STATE {
   IDLE
   LOADING
-  LOADED 
+  LOADED
   DELIVERING
   DELIVERED
   RETURNING
 }
-
-model eVOLTS{
-  serialNumber String @unique
-  weightLimit  Int @default(500)
-  batteryLevel Int
-  weight  WEIGHT  @default(LIGHTWEIGHT)
-  state  STATE  @default(IDLE) 
-  batteryLogs  BatteryLog[]
-  medications   Medication[] 
-}
-
-model Medication {
-id           Int      @id @default(autoincrement())
-  name         String
-  weight       Int
-  code         String
-  image        String
-  eVTOL_serialNumber String
-  eVTOL        eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
-}
-
-model BatteryLog {
-  batteryId          Int    @id @default(autoincrement())
-  eVTOL_serialNumber String
-  eVTOL              eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
-  batteryLevel       Int
-  timestamp          DateTime @default(now())
-}
-
-
-
-
