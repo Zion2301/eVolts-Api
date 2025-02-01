@@ -1,18 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";  // Import CORS
 import evotlRouter from "./routes/evotlRoutes";
 
 dotenv.config();
 const app = express();
 
-// Manually set CORS headers
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');  // Your frontend URL
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');  // Allow methods
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');  // Allow headers
-  res.setHeader('Access-Control-Allow-Credentials', 'true');  // Allow credentials (cookies, etc.)
-  next();  // Proceed to the next middleware
-});
+// CORS Configuration
+app.use(cors({
+  origin: 'http://localhost:5173',  // Local frontend URL during development
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allowed headers
+  credentials: true  // Allow credentials (cookies, auth tokens)
+}));
 
 app.use(express.json());
 app.use("/api/evtols", evotlRouter);
