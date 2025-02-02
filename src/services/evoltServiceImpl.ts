@@ -4,6 +4,18 @@ import { eVOLTservice } from "./evoltService";
 
 const prisma = new PrismaClient();
 export class eVOLTServiceImpl implements eVOLTservice{
+    async getEVOLTBySerial(serialNumber: string): Promise<eVOLTS> {
+        try {
+            const evolt = await prisma.eVOLTS.findUnique({ where: {serialNumber} }); // Find EVOLT by serial number
+            if (!evolt) {
+                throw new Error("EVOLT not found");
+            }
+            return evolt;
+        } catch (error) {
+            console.error("Error fetching EVOLT by serial number:", error);
+            throw new Error("Could not fetch EVOLT details.");
+        }
+    }
    async getidleEvolts(): Promise<any> {
         try {
             const idleevolts = await prisma.eVOLTS.findMany({where: {state: "IDLE"}})

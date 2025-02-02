@@ -97,4 +97,28 @@ export const getIdleEVOLTs = async (req: Request, res: Response): Promise<void> 
     }
 };
 
+export const getEVOLTBySerial = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { serialNumber } = req.params;
+
+        if (!serialNumber) {
+            res.status(400).json({ error: "Serial number is required" });
+            return;
+        }
+
+        const evolt = await eVOLTService.getEVOLTBySerial(serialNumber);
+
+        if (!evolt) {
+            res.status(404).json({ error: `EVOLT with serial number ${serialNumber} not found` });
+            return;
+        }
+
+        res.status(200).json({ evolt });
+    } catch (error: any) {
+        console.error("Error fetching EVOLT details:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
 

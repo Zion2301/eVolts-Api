@@ -8,4 +8,5 @@ export interface eVOLTservice {
     checkBatterylevels(serialNumber: string): Promise<{ batteryLevel: number }>;
     getMedicationsByEvoltSerial(serialNumber: string): Promise<any>
     getidleEvolts():Promise<any>
+    getEVOLTBySerial(serialNumber: string): Promise<eVOLTS>;
 }
