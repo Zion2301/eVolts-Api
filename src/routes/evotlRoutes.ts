@@ -14,6 +14,6 @@ evotlRouter.post("/load-medication/:serialNumber", loadMedication)
 evotlRouter.get("/battery-check/:serialNumber", checkBatteryLevels)
 evotlRouter.get("/medications/:serialNumber", getMedicationsByEvoltSerial)
 evotlRouter.get("/idle-evolts", getIdleEVOLTs);
-evotlRouter.get("/:serialNumber", getEVOLTBySerial); 
+evotlRouter.get("/evtols/:serialNumber", getEVOLTBySerial);
 
 export default evotlRouter;
