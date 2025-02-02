@@ -7,7 +7,9 @@ export class eVOLTServiceImpl implements eVOLTservice{
     async getEVOLTBySerial(serialNumber: string): Promise<eVOLTS | null> {
         try {
             const evolt = await prisma.eVOLTS.findUnique({ where: { serialNumber } });
-            return evolt;  // If not found, it will return null, no need to throw an error
+            console.log(evolt)
+            return evolt; 
+             // If not found, it will return null, no need to throw an error
         } catch (error) {
             console.error("Error fetching EVOLT by serial number:", error);
             throw new Error("Could not fetch EVOLT details.");
