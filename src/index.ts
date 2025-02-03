@@ -8,7 +8,7 @@ const app = express();
 
 // CORS Configuration
 app.use(cors({
-  origin: 'http://localhost:5173',  // Local frontend URL during development
+  origin: '*',  // Local frontend URL during development
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allowed headers
   credentials: true  // Allow credentials (cookies, auth tokens)
