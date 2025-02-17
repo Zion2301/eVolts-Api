@@ -14,8 +14,8 @@ export const comparePassword = async (password: string, hashedPassword: string) 
 };
 
 // Generate JWT
-export const generateJWT = (userId: number) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1d" });
+export const generateJWT = (userId: number, isAdmin: Boolean) => {
+  return jwt.sign({ userId, isAdmin }, JWT_SECRET, { expiresIn: "1d" });
 };
 
 // Verify JWT
