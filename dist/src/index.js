@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors")); // Import CORS
 const evotlRoutes_1 = __importDefault(require("./routes/evotlRoutes"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
+// import { authenticate } from "./middleware/authMiddleware";
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // CORS Configuration

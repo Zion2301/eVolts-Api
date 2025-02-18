@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 // User registration
 export const register = async (req: Request, res: Response): Promise<Response> => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     const userExists = await prisma.user.findUnique({ where: { email } });
