@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 // User registration
 export const register = async (req: Request, res: Response): Promise<Response> => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const userExists = await prisma.user.findUnique({ where: { email } });
@@ -19,6 +19,7 @@ export const register = async (req: Request, res: Response): Promise<Response> =
 
     const user = await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
         isAdmin, // Store admin status in DB
