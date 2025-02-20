@@ -13,6 +13,8 @@ export const register = async (req: Request, res: Response): Promise<Response> =
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    console.log("Incoming request body:", req.body); // ✅ Add this line
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -21,9 +23,13 @@ export const register = async (req: Request, res: Response): Promise<Response> =
     const hashedPassword = await hashPassword(password);
     const isAdmin = email === "admin@gmail.com" && password === "admin";
 
+    console.log("Data being sent to Prisma:", { name, email, password: hashedPassword, isAdmin });
+
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword, isAdmin },
     });
+
+    console.log("User created successfully:", user);
 
     const token = generateJWT(user.id, user.isAdmin);
 
@@ -37,6 +43,7 @@ export const register = async (req: Request, res: Response): Promise<Response> =
     return res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 
 // User Login
 export const login = async (req: Request, res: Response): Promise<Response> => {

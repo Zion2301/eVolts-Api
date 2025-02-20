@@ -13,48 +13,64 @@ exports.login = exports.register = void 0;
 const client_1 = require("@prisma/client");
 const auth_utils_1 = require("../utils/auth.utils");
 const prisma = new client_1.PrismaClient();
-// User registration
+// User Registration
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
     try {
-        const userExists = yield prisma.user.findUnique({ where: { email } });
-        if (userExists)
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        console.log("Incoming request body:", req.body); // ✅ Add this line
+        const existingUser = yield prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
+        }
         const hashedPassword = yield (0, auth_utils_1.hashPassword)(password);
-        // Check if the user is an admin
         const isAdmin = email === "admin@gmail.com" && password === "admin";
+        console.log("Data being sent to Prisma:", { name, email, password: hashedPassword, isAdmin });
         const user = yield prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                isAdmin, // Store admin status in DB
-            },
+            data: { name, email, password: hashedPassword, isAdmin },
         });
-        const token = (0, auth_utils_1.generateJWT)(user.id, user.isAdmin); // Include isAdmin in JWT
-        return res.status(201).json({ user, token, isAdmin });
+        console.log("User created successfully:", user);
+        const token = (0, auth_utils_1.generateJWT)(user.id, user.isAdmin);
+        return res.status(201).json({
+            message: "User registered successfully",
+            user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin },
+            token,
+        });
     }
     catch (error) {
-        return res.status(500).json({ message: "Something went wrong", error });
+        console.error("Registration Error:", error);
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 });
 exports.register = register;
-// User login
+// User Login
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
         const user = yield prisma.user.findUnique({ where: { email } });
-        if (!user)
-            return res.status(400).json({ message: "User not found" });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
         const isMatch = yield (0, auth_utils_1.comparePassword)(password, user.password);
-        if (!isMatch)
-            return res.status(400).json({ message: "Invalid credentials" });
-        // Ensure admin login always gets isAdmin = true
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
         const isAdmin = email === "admin@gmail.com" && password === "admin" ? true : user.isAdmin;
         const token = (0, auth_utils_1.generateJWT)(user.id, isAdmin);
-        return res.status(200).json({ user, token, isAdmin });
+        return res.status(200).json({
+            message: "Login successful",
+            user: { id: user.id, name: user.name, email: user.email, isAdmin: isAdmin },
+            token,
+        });
     }
     catch (error) {
-        return res.status(500).json({ message: "Something went wrong", error });
+        console.error("Login Error:", error);
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 });
 exports.login = login;
