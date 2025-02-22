@@ -41,16 +41,19 @@ export const getAllEVOLTS = async (req: Request, res: Response): Promise<void> =
 export const loadMedication = async (req: Request, res: Response): Promise<void> => {
     try {
         const { serialNumber } = req.params;
-        const { name, weight, code, image } = req.body; // Expecting image URL, not a file
+        const { name, weight, code } = req.body; // Expecting image URL, not a file
 
-        if (!name || !weight || !code || !image) {
+        if (!name || !weight || !code) {
             res.status(400).json({ error: "Missing required fields" });
             return 
         }
 
         // Send data to service layer
         const result = await eVOLTService.loadMedication(serialNumber, [
-            { name, weight: Number(weight), code, image },
+            {
+                name, weight: Number(weight), code,
+                image: ""
+            },
         ]);
 
         res.status(200).json({ message: result });

@@ -22,7 +22,7 @@ model Medication {
   name               String
   weight             Int
   code               String
-  image              String
+  image              String?
   eVTOL_serialNumber String
   eVTOL              eVOLTS @relation(fields: [eVTOL_serialNumber], references: [serialNumber])
 }
