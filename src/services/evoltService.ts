@@ -1,4 +1,4 @@
-import { eVOLTS, WEIGHT } from "@prisma/client";
+import { eVOLTS, WEIGHT, Order } from "@prisma/client";
 import { STATE } from "@prisma/client";
 
 export interface eVOLTservice {
@@ -9,4 +9,6 @@ export interface eVOLTservice {
     getMedicationsByEvoltSerial(serialNumber: string): Promise<any>
     getidleEvolts():Promise<any>
     getEVOLTBySerial(serialNumber: string): Promise<eVOLTS | null>;
+    getOrdersByUser(userId: number): Promise<Order[]>;
+    createOrder(userId: number, eVOLTSerial: string, medicationIds: number[]): Promise<Order>;
 }

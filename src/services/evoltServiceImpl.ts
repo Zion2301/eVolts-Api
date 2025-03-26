@@ -1,4 +1,4 @@
-import { PrismaClient, STATE, WEIGHT, eVOLTS } from "@prisma/client";
+import { Order, PrismaClient, STATE, WEIGHT, eVOLTS } from "@prisma/client";
 import { eVOLTservice } from "./evoltService";
 
 
@@ -128,6 +128,28 @@ export class eVOLTServiceImpl implements eVOLTservice{
     }
     async getAllEVOLTS(): Promise<eVOLTS[]> {
         return await prisma.eVOLTS.findMany();
+    }
+
+    async getOrdersByUser(userId: number): Promise<Order[]> {
+        return await prisma.order.findMany({
+            where: { userId },
+            include: {
+                eVOLT: true, // If you want to include related eVOLT details
+            },
+        });
+    }
+
+    async createOrder(userId: number, eVOLTSerial: string, medicationIds: number[]): Promise<Order> {
+        return await prisma.order.create({
+            data: {
+                userId,
+                eVOLTSerial,
+                medications: {
+                    connect: medicationIds.map((id) => ({ id })),
+                },
+            },
+            include: { eVOLT: true, medications: true },
+        });
     }
     
 

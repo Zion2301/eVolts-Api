@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { eVOLTServiceImpl } from "../services/evoltServiceImpl";
-import { eVOLTS, STATE, WEIGHT } from "@prisma/client";
+import { eVOLTS, Order, STATE, WEIGHT } from "@prisma/client";
 import { uploadToCloudinaryMedicationImage } from "../config/cloudinaryConfig";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
 const eVOLTService = new eVOLTServiceImpl();
 
 export const registerEVOLT = async (req: Request, res: Response): Promise<void> => {
@@ -120,6 +121,46 @@ export const getEVOLTBySerial = async (req: Request, res: Response): Promise<voi
     } catch (error: any) {
         console.error("Error fetching EVOLT details:", error);
         res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+export const getUserOrders = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.userId; // Assuming user ID is stored in `req.user`
+
+        if (!userId) {
+             res.status(401).json({ message: "Unauthorized" });
+             return
+        }
+
+        const orders = await eVOLTService.getOrdersByUser(userId);
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const createOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.userId; // Assuming user ID is stored in `req.user`
+        const { eVOLTSerial, medicationIds } = req.body;
+
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        if (!eVOLTSerial || !Array.isArray(medicationIds) || medicationIds.length === 0) {
+            res.status(400).json({ error: "Missing or invalid order details" });
+            return;
+        }
+
+        const order: Order = await eVOLTService.createOrder(userId, eVOLTSerial, medicationIds);
+        res.status(201).json({ success: true, order });
+    } catch (error: any) {
+        console.error("Error creating order:", error);
+        res.status(500).json({ error: error.message || "Internal server error" });
     }
 };
 

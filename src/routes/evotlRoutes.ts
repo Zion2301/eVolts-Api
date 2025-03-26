@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { 
   registerEVOLT, getAllEVOLTS, loadMedication, checkBatteryLevels, 
-  getMedicationsByEvoltSerial, getIdleEVOLTs, getEVOLTBySerial 
+  getMedicationsByEvoltSerial, getIdleEVOLTs, getEVOLTBySerial, 
+  createOrder,
+  getUserOrders
 } from "../controllers/evoltController";
 import { uploadToCloudinaryMedicationImage } from "../config/cloudinaryConfig";
 import { authenticate, isAdmin } from "../middleware/authMiddleware";
@@ -23,7 +25,8 @@ evotlRouter.get("/battery-check/:serialNumber", authenticate, checkBatteryLevels
 evotlRouter.get("/medications/:serialNumber", authenticate, getMedicationsByEvoltSerial);
 evotlRouter.get("/idle-evolts", authenticate, getIdleEVOLTs);
 evotlRouter.get("/:serialNumber", authenticate, getEVOLTBySerial);
-
+evotlRouter.get("/orders", authenticate, getUserOrders);
+evotlRouter.post("/neworder", authenticate, createOrder);
 // ✅ This route should always require authentication
 evotlRouter.get("/test", authenticate, (req, res) => {
   console.log("✅ Test route hit!");
