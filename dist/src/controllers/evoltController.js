@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEVOLTBySerial = exports.getIdleEVOLTs = exports.checkBatteryLevels = exports.getMedicationsByEvoltSerial = exports.loadMedication = exports.getAllEVOLTS = exports.registerEVOLT = void 0;
+exports.createOrder = exports.getUserOrders = exports.getEVOLTBySerial = exports.getIdleEVOLTs = exports.checkBatteryLevels = exports.getMedicationsByEvoltSerial = exports.loadMedication = exports.getAllEVOLTS = exports.registerEVOLT = void 0;
 const evoltServiceImpl_1 = require("../services/evoltServiceImpl");
 const eVOLTService = new evoltServiceImpl_1.eVOLTServiceImpl();
 const registerEVOLT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,14 +46,17 @@ exports.getAllEVOLTS = getAllEVOLTS;
 const loadMedication = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { serialNumber } = req.params;
-        const { name, weight, code, image } = req.body; // Expecting image URL, not a file
-        if (!name || !weight || !code || !image) {
+        const { name, weight, code } = req.body; // Expecting image URL, not a file
+        if (!name || !weight || !code) {
             res.status(400).json({ error: "Missing required fields" });
             return;
         }
         // Send data to service layer
         const result = yield eVOLTService.loadMedication(serialNumber, [
-            { name, weight: Number(weight), code, image },
+            {
+                name, weight: Number(weight), code,
+                image: ""
+            },
         ]);
         res.status(200).json({ message: result });
     }
@@ -122,3 +125,42 @@ const getEVOLTBySerial = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getEVOLTBySerial = getEVOLTBySerial;
+const getUserOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId; // Assuming user ID is stored in `req.user`
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const orders = yield eVOLTService.getOrdersByUser(userId);
+        res.status(200).json({ orders });
+    }
+    catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+exports.getUserOrders = getUserOrders;
+const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId; // Assuming user ID is stored in `req.user`
+        const { eVOLTSerial, medicationIds } = req.body;
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        if (!eVOLTSerial || !Array.isArray(medicationIds) || medicationIds.length === 0) {
+            res.status(400).json({ error: "Missing or invalid order details" });
+            return;
+        }
+        const order = yield eVOLTService.createOrder(userId, eVOLTSerial, medicationIds);
+        res.status(201).json({ success: true, order });
+    }
+    catch (error) {
+        console.error("Error creating order:", error);
+        res.status(500).json({ error: error.message || "Internal server error" });
+    }
+});
+exports.createOrder = createOrder;

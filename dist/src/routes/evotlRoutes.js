@@ -19,6 +19,8 @@ evotlRouter.get("/battery-check/:serialNumber", authMiddleware_1.authenticate, e
 evotlRouter.get("/medications/:serialNumber", authMiddleware_1.authenticate, evoltController_1.getMedicationsByEvoltSerial);
 evotlRouter.get("/idle-evolts", authMiddleware_1.authenticate, evoltController_1.getIdleEVOLTs);
 evotlRouter.get("/:serialNumber", authMiddleware_1.authenticate, evoltController_1.getEVOLTBySerial);
+evotlRouter.get("/orders", authMiddleware_1.authenticate, evoltController_1.getUserOrders);
+evotlRouter.post("/neworder", authMiddleware_1.authenticate, evoltController_1.createOrder);
 // ✅ This route should always require authentication
 evotlRouter.get("/test", authMiddleware_1.authenticate, (req, res) => {
     console.log("✅ Test route hit!");

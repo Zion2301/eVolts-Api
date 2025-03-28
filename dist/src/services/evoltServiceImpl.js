@@ -134,5 +134,29 @@ class eVOLTServiceImpl {
             return yield prisma.eVOLTS.findMany();
         });
     }
+    getOrdersByUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield prisma.order.findMany({
+                where: { userId },
+                include: {
+                    eVOLT: true, // If you want to include related eVOLT details
+                },
+            });
+        });
+    }
+    createOrder(userId, eVOLTSerial, medicationIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield prisma.order.create({
+                data: {
+                    userId,
+                    eVOLTSerial,
+                    medications: {
+                        connect: medicationIds.map((id) => ({ id })),
+                    },
+                },
+                include: { eVOLT: true, medications: true },
+            });
+        });
+    }
 }
 exports.eVOLTServiceImpl = eVOLTServiceImpl;
